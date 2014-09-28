@@ -1,0 +1,324 @@
+                                     GRADER
+
+Name of student running submit: Tony Chen
+Login of student running submit: cs61b-zm
+
+Second team member's name: Ibrahim Hamisu
+Second team member's login: cs61b-vh
+
+Third team member's name (if any):
+Third team member's login:
+
+IMPORTANT:  Once you've submitted Project 2 once, the same team member should
+submit always.  If a different teammate must submit, inform cs61b@cory.eecs of
+all the details.  Include a complete list of team members, and let us know
+which submission you want graded.
+
+If you've submitted your project once, or even written a substantial amount of
+code together, you may not change partners without the permission of the
+instructor.
+===============================================================================
+Does your program compile without errors?
+-Yes
+
+Have you tested your program on the 61B lab machines?
+-Yes
+
+Did you successfully implement game tree search?  Did you successfully
+implement alpha-beta pruning?  Are there any limitations on it?  What is the
+default number of search levels set by the one-parameter MachinePlayer
+constructor (or is it a variable-depth search)?
+
+-We successfully implemented game tree search, including alpha-beta pruning. There are
+limitations to it as it does not prune all the cases, which Professor Shewchuk has said before.
+- The default searchDepth is 2.
+
+Describe your board evaluation function in some detail.
+-110 is the GameBoard.MAXBOARDSCORE. -110 is the GameBoard.MINBOARDSCORE. 
+-If a winning network is achieved by MachinePlayer.COMPUTER, GameBoard.evalBoard() subtracts the moves made from the maximum board score. 
+-If achieved by MachinePlayer.HUMAN, then it adds moves made to the board score. 
+-This makes sure that evalBoard() prioritizes wins in fewer moves. 
+-If there is no network in the board, the board adds 3 points for each chip in the computer’s goal and subtracts 3 for each chip in the opponent’s goal. 
+-It adds the number of connections of the computer to the score and then subtracts the number of connections of the opponent from the score. 
+-An upper bound for the number of connections of a player is 80, because 10 chips * 8 connections per chip is 80. A player can have 8 chips in goal areas. The max board score under these conditions is (3*8) + 80 = 104, which is why the max and min board scores are 110 and -110 respectively. 
+-Assuming no search depth that is greater than 5, having a network gives a higher board score than the upper bound possible board score without a network.
+
+Does your MachinePlayer use any special method of choosing the first few moves?
+-No. All moves are done using the alpha-beta pruning version of bestMove(). The first few moves are usually the same or similar as a result of this.
+
+Is there anything else the graders should know to help them read your project?
+-listMoves() uses DList.toMoveArray() to make an array of moves from a DList.
+-minimaxbestMove() isn't used or called on by chooseMove(). It's just there for the readers to see that we have 2 working versions for minimax: 
+minimaxbestMove() has no alpha-beta pruning and bestMove() has alpha-beta pruning.
+The main methods in GameBoard and MachinePlayer are just testing code.
+
+Describe the classes, modules, and interfaces you designed before and while you
+implemented the project.  Your description should include:
+  -  A list of the classes your program uses.
+  -  A list of each of the "modules" used in or by MachinePlayer, similar to
+     the list in the "Teamwork" section of the README (but hopefully more
+     detailed).  (If you're using a list class, that should probably count as
+     a separate module.)
+  -  For each module, list the class(es) the module is implemented in.
+  -  For each module, say which of your team members implemented it.
+  -  For each module, describe its interface--specifically, the prototype and
+     behavior of each method that is available for external callers (outside
+     the module) to call.  Don't include methods that are only meant to be
+     called from within the module.
+
+     For each method, provide (1) a method prototype and (2) a complete,
+     unambiguous description of the behavior of the method/module.  This
+     description should also appear before the method in your code's comments.
+
+You will probably need to change some of your design decisions as you go; be
+sure to modify this file to reflect these changes before you submit your
+project.  Your design of classes and interfaces will be worth 10% of your
+grade.
+
+Classes (outside of what was given):
+BestMove
+GameBoard
+DList
+DListNode
+
+class GameBoard:
+
+/**
+ *  Implemented by zm
+ *  isValidMove() determines if the move is valid. A move is valid if it satisfies all 
+ *  of the following:
+ *  1)  The chip is not placed in any of the four corners. 
+ *  2)  The chip is not placed in a goal of the opposite color.
+ *  3)  The chip is not placed in a square that is already occupied.
+ *  4)  The chip is not placed in a connected group (cluster) of over 2 chips, whether 
+ *  connected orthogonally or diagonally.
+ *  5)  If there are greater than 10 chips place by a player, then only placed chips can be 
+ *  moved. (The move is a step move)
+ *  6) If the move is a step move, the chip cannot be moved to the same location that it is 
+ *  already in.
+ *  7) The move is an add move if the player has less than 10 chips placed.
+ *  @param move is Move m.
+ *  @param player is an integer representing the player making this move.
+ *  @return true if the move is valid; else, return false.
+**/
+protected boolean isValidMove(Move move, int player)
+
+/**
+ *  Implemented by zm
+ *  inBound() is a helper method that checks if the coordinates are in bounds for a move.
+ *  @param x and y are integers that represent the coordinates to check.
+ *  @return true if the coordinates are within the board DIMENSION. false else.
+**/
+private boolean inBound(int x, int y)
+
+/**
+ *  Implemented by zm
+ *  checkMoveRequirements() is a helper method used by isValidMove().
+ *  It check the following requirements:
+ *  1)  The chip is not placed in any of the four corners. 
+ *  2)  The chip is not placed in a goal of the opposite color.
+ *  3)  The chip is not placed in a square that is already occupied.
+ *  4)  The chip is not placed in a connected group (cluster) of 2 chips, whether 
+ *  connected orthogonally or diagonally.
+ *  @param x and y are integers representing the coordinates for which we want to make a
+    move
+ *  @param player is an integer representing the color of the player making the move.
+ *  @return true if the move passes the above requirements. false else.
+**/
+private boolean checkMoveRequirements(int x, int y, int player)
+
+/**
+ *  Implemented by zm
+ *  isClustered() is a helper method used by checkMoveRequirements() that checks if the chip 
+ *  at a coordinate is clustered.
+ *  A chip is clustered if any of the chips directly adjacent this chip are not empty.
+ *  @param x and y are integers indicating the location of the chip to check.
+ *  @param player is the color of the chip to check.
+ *  @return true if the chip at the location is clustered. false else.
+**/
+private boolean isClustered(int x, int y, int player)
+
+/**
+ *  Implemented by vh
+ *  listMoves() lists all valid moves that the player can make.
+ *  Each element of the array contains 1 move.
+ *  Only returns add moves when less than 10 pieces have been placed by player.
+ *  Only returns step moves when 10 pieces have been placed by player.
+ *  @param int player, is an integer representing the player whose possible moves we are  considering.
+ *  @return array of type Move, which contains all valid moves.
+**/
+protected Move[] listMoves()
+
+/**
+ *  Implemented by zm
+ *  findConnections() finds all chips which are connections to a specified chip. 
+ *  A chip is a connection to another if it runs along a straight line, is orthogonal 
+ *  or diagonal to the indicated chip and if the chip is the first chip that is along 
+ *  the line originating from the specified chip. 
+ *  @param x is an Integer that is the x-coordinate of the chip
+ *  @param y is an Integer that is the y-coordinate of the chip
+ *  @return a DList, in which each node.item is a 1x2 array, where the first entry is the 
+ *  x-coordinate of the connected chip and the second entry is the y-coordinate of the 
+ *  connected chip.
+**/
+protected DList findConnections(int x, int y)
+
+/**
+ *  Implemented by zm
+ *  vectorSearch() is a helper method for findConnections() to search for a connection in a 
+ *  given direction.
+ *  A chip is a connection to another if it runs along a straight line, is orthogonal 
+ *  or diagonal to the indicated chip and if the chip is the first chip that is along 
+ *  the line originating from the specified chip.
+ *  @param x and y are integers giving the starting position of the search.
+ *  @param x_vector and y_vector are integers ranging from -1 to 1, giving the direction to 
+ *  search.
+ *  @return a 1x2 integer array, where the first entry is the x-coordinate of the connection and 
+ *  the second entry is the y-coordinate of the connected chip.
+ *  @return null if there is no connection found in the direction specified by x_vector, y_vector
+**/
+private int[] vectorSearch(int x, int y, int x_vector, int y_vector)
+
+/**
+ *  Implemented by zm
+ *  hasValidNetwork() determines whether this.gameboard has a valid network
+ *  for player "side".  (Does not check whether the opponent has a network.)
+ *  A network is valid if it satisfies the following:
+ *  1) The network does not pass through the same chip twice.
+ *  2) The network has 1 chip in each goal.
+ *  3) A network has 6 or more connected chips. Connected chips are described
+ *  in the findConnections() method description.
+ *  4) Black's goal areas are squares 10, 20, 30, 40, 50, 60 and 17, 27, 37, 47, 57, 67.
+ *  5) White's goal areas are squares 01, 02, 03, 04, 05, 06 and 71, 72, 73, 74, 75, 76.
+ *  Unusual conditions:
+ *  If side is neither MachinePlayer.COMPUTER nor MachinePlayer.HUMAN,
+ *          returns false.
+ *  If this.gameboard squares contain illegal values, the behavior of this
+ *          method is undefined (i.e., don't expect any reasonable behavior).
+ *  @param player is integer: MachinePlayer.COMPUTER or MachinePlayer.HUMAN
+ *  @return true if player has a winning network in this.gameboard; false otherwise.
+**/
+  protected boolean hasValidNetwork(int player)
+
+/**
+ *  Implemented by zm
+ *  getGoalPieces() returns a list of pieces of in the goal of a specified player.
+ *  @param player is an integer specifying the color of the player.
+ *  @param goal is an integer specifying which goal to get pieces: 0 for the starting goal. 7 
+ *  (DIMENSION - 1) for the ending goal.
+ *  @return a DList where each node.item is a 1x2 array. The first entry is the x-coordinate of 
+ *  the piece in the goal. The second entry is the y-coordinate.
+**/
+private DList getGoalPieces(int player, int goal)
+
+/**
+ *  Implemented by zm
+ *  getNetwork() gets the first valid network containing 6 or more pieces.
+ *  @param x_coord and y_coord are the coordinates of the chip for which to search for 
+ *  networks
+ *  @param player specifies the player for whom to search for networks.
+ *  @param checked_chips is an 8x8 array of booleans. Each cell is true if it has been check, 
+ *  and false by default.
+ *  @param int direction specifies the direction not to check, because a network must turn a 
+ *  corner at each node of the network.
+ *  @param startGoal and endGoal are DLists which are specify the chips in the starting goal 
+ *  and ending goal respectively. Each node.item is a 1x2 array. The first entry is the 
+ *  x-coordinate of the piece in the goal. The second entry is the y-coordinate.
+ *  @param network is a DList containing the constructed network so far. Each node.item is a 
+ *  1x2 array. The first entry is the x-coordinate of the piece in the goal. The second entry is 
+ *  the y-coordinate.
+ *  @return true if there is a valid network. else return false.
+**/
+private boolean getNetwork(int x_coord, int y_coord, int player, boolean[][] checked_chips, int direction, DList startGoal, DList endGoal, DList network)
+
+/**
+ *  Implemented by zm
+ *  inGoal() determines if a chip is in a goal area.
+ *  @param x and y are coordinates of the chip to check.
+ *  @param goalPieces is a DList of the chips in a specified goal.  Each node.item is a 1x2  
+ *  array. The first entry is the x-coordinate of the piece in the goal. The second entry is the 
+ *  y-coordinate.
+ *  @return true if the chip is in the goal. false otherwise.
+**/
+private boolean inGoal(int x, int y, DList goalPieces)
+
+
+/**
+ *  Implemented by zm
+ *  evalBoard() uses this gameboard and returns an integer between -110 and 110 depending on 
+ *  the number of connections Machine player has as well as the number of connections the 
+ *  opponent has.
+ *  The score increases with the number of chips the Machine player has in a goal as well as 
+ *  the number of connections the Machine player’s chips have.
+ *  The score decreases with the number of chips the opponent has in a goal as well as the 
+ *  number of connections the opponent player’s chips have.
+ *  110 means the machine player hasValidNetwork.
+ *  -110 means the opponent hasValidNetwork.
+ *  110 is the best board score, and -110 is the worst board score.
+ *  evalBoard() gives a higher score for wins made in fewer moves.
+ *  @param moves_made is an integer that tells you how many moves you have made.
+ *  @return score is an Integer that rates how good the board is.
+**/
+protected int evalBoard(int moves_made)
+
+/**
+ *  Implemented by zm
+ *  connectionCount() counts the number of connections a specified player has.
+ *  This is a helper method used by evalBoard().
+ *  @param player is an int specifying the player for whom to check connections.
+ *  @return an integer specifying the number of connections between chips of the player.
+**/
+private int connectionCount(int player)
+
+/**
+ *  Implemented by zm
+ *  makeMove() takes input Move m and updates the game board if the move is 
+ *  legal
+ *  @param Move m is the move that the player wants to make on the board.
+**/
+ protected makeMove(Move m)
+
+/**
+ *  Implemented by vh
+ *  undoMove() takes input Move m and updates the game board back to its previous state 
+ *  before the move was made
+ *  @param Move m is the move that has to be undone.
+ **/
+protected undoMove(Move m)
+
+
+class MachinePlayer:
+
+/**
+ *  Implemented by vh
+ *  minimaxbestMove() performs a minimax tree search to determine the best move to 
+ *  make, given an array of valid moves from 
+ *  listMoves(). 
+ *  @param boolean side, which represents the machine player using the mini-max search
+ *  @param int depth, searchDepth value for the player
+ *  @return move is BestMove that will maximize the increase in board score.
+**/
+private BestMove minimaxbestMove(int depth, boolean side)
+
+  /**
+   *  Implemented by vh
+   *  bestMove() performs alpha-beta pruning for the minimax tree search.
+   *  @param side is a boolean that indicates  whether the side playing is "this" 
+   *  MachinePlayer
+   *  @param depth is an Integer that determines the searchDepth of "this" MachinePlayer
+   *  @param alpha is an Integer, which gives the minimum score our        
+   *  machinePlayer would get from a specific move
+   *  @param beta is an Integer, which is the maximum score of the opponent
+   *  @return move is a BestMove that will maximize the increase in board score
+  **/
+private BestMove bestMove(int depth, boolean side, int alpha, int beta)
+
+
+class DList:
+
+/**
+ *  Implemented by zm
+ *  toMoveArray() converts this DList to an array of Moves. Use by GameBoard.listMoves()
+ *  @return an array of type Move
+**/
+public Move[] toMoveArray()
